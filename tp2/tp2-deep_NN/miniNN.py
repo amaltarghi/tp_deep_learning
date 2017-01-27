@@ -13,6 +13,8 @@ __version__ = "1.0"
 import copy, math, time, sys
 import dataset_loader
 from nn_ops import *
+import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt1
 
 #############################
 ### Preliminaries
@@ -72,6 +74,11 @@ print("epoch time(s) train_loss train_accuracy valid_loss valid_accuracy eta")
 #############################
 ### Learning process
 #############################
+g_i = []
+g_train_loss=[]
+g_train_acc=[]
+g_valid_loss=[]
+g_valid_acc=[]
 for i in range(n_epoch):
     for j in range(n_batch):
 
@@ -81,7 +88,7 @@ for i in range(n_epoch):
         prev_time = time.clock()
 
         ### Forward propagation
-        Y,Yp = forward(act_func, W, B, batch)
+        Y,Yp = forward(act_func, W, B, batch,drop_func)
 
         ### Compute the softmax
         out = softmax(Y[-1])
@@ -105,6 +112,29 @@ for i in range(n_epoch):
     valid_loss, valid_accuracy = computeLoss(W, B, valid_set[0], valid_set[1], act_func) 
 
     result_line = str(i) + " " + str(cumul_time) + " " + str(train_loss) + " " + str(train_accuracy) + " " + str(valid_loss) + " " + str(valid_accuracy) + " " + str(eta)
+    g_i = np.append(g_i, i)
+    g_train_loss = np.append(g_train_loss, train_loss)
+    g_train_acc = np.append(g_train_acc, train_accuracy)
+    g_valid_loss = np.append(g_valid_loss, valid_loss)
+    g_valid_acc = np.append(g_valid_acc, valid_accuracy)
 
     print(result_line)
     sys.stdout.flush() # Force emptying the stdout buffer
+
+plt.plot(g_i,g_train_acc,label='train_acc')
+plt.plot(g_i,g_valid_acc,label='valid_acc')
+plt.xlabel("epoch")
+plt.ylabel("Classification acc sigmoide[128-128]")
+plt.ylim([0.,1.])
+plt.legend(loc='best')
+plt.show()
+
+plt1.plot(g_i,g_train_loss,label='train_loss')
+plt1.plot(g_i,g_valid_loss,label='valid_loss')
+plt1.xlabel("epoch")
+plt1.ylabel("Classification sigmoid [128-128]")
+plt1.ylim([0.,3.])
+plt1.legend(loc='best')
+plt1.show()
+
+
